@@ -1,2 +1,2 @@
-# edtech
-a github for the educatehacks hackathon
+# EducateHacks
+A GitHub repo for the EducateHacks hackathon
