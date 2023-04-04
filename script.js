@@ -91,6 +91,7 @@ const pages = {
         enter_btn.onclick = function () {
             var entry_code = code_input.value
             database.ref().child(entry_code).get().then((result) => {
+                // If the room doesn't exist, there should be an alert
                 if (result.exists()) {
                     var student_code = generate_code()
                     database.ref(`${entry_code}/students/${student_code}`).set({
@@ -111,6 +112,7 @@ const pages = {
     },
 
     student_page: function (student_code, room_code) {
+
         this.create_page_div("student_page")
         const page_div = document.getElementById("student_page")
 
@@ -139,6 +141,8 @@ const pages = {
 
             btn.onclick = function () {
 
+                btn.disabled = true
+                console.log(btn)
                 // Property that correpsonds to button's id is set to true in student object
                 // E.g., repeat: true
                 update_obj[e] = true
@@ -150,25 +154,28 @@ const pages = {
 
                     update_obj[e] = false
                     student_ref.update(update_obj)
+                    btn.disabled = false;
                 }
 
-                setTimeout(set_false, 10000)
+                setTimeout(set_false, 5000)
 
             }
         })
 
         var timer
         textarea.addEventListener("keydown", function () {
+
             window.clearTimeout(timer)
             student_ref.update({ is_typing: true })
 
             function set_typing_false() {
                 student_ref.update({ is_typing: false })
             }
-            timer = setTimeout(set_typing_false, 500)
+            timer = setTimeout(set_typing_false, 1000)
 
         })
 
+        // If teacher-created room disappears, there should be some sort of notification
         window.onbeforeunload = (e) => {
             student_ref.remove()
         }
@@ -182,7 +189,7 @@ const pages = {
 
         const code = generate_code()
         const p_code = document.createElement("p")
-        p_code.innerHTML = code
+        p_code.innerHTML = `Room code: ${code}`
         page_div.appendChild(p_code)
 
         const room_ref = database.ref("/" + code)
@@ -192,20 +199,85 @@ const pages = {
             code: code,
         })
 
-        var p_students_typing = document.createElement("p")
-        page_div.appendChild(p_students_typing)
+        const info_arr = ["students_typing", "students_repeat", "students_slow_down", "students_elaborate"]
+
+        for (i = 0; i < 4; i++) {
+            var p = document.createElement("p")
+            p.id = info_arr[i]
+            page_div.appendChild(p)
+        }
+
+        const no_students = document.createElement("p")
+        no_students.innerHTML = "No students are connected."
+        page_div.appendChild(no_students)
 
         room_ref.on('value', (snapshot) => {
-            var room_obj = snapshot.val()
-            var student_obj = room_obj["students"]
-            var total_students = Object.keys(student_obj).length
-            var students_typing = 0
-            for (student in student_obj) {
-                if (student_obj[student]["is_typing"]) {
-                    students_typing = + 1
+
+            room_ref.child("students").get().then((result) => {
+
+                if (result.exists()) {
+
+                    var room_obj = snapshot.val()
+                    var student_obj = room_obj["students"]
+                    var total_students = Object.keys(student_obj).length
+                    var students_typing = students_repeat = students_slow_down = students_elaborate = 0
+                    var typing_status = repeat_status = slow_status = elaborate_status = "✓"
+
+                    info_arr.forEach(e => {
+                        document.getElementById(e).classList = "display_info emerald"
+                    })
+
+                    for (student in student_obj) {
+                        if (student_obj[student]["is_typing"]) {
+                            students_typing = + 1
+                            typing_status = "✗"
+                            document.getElementById("students_typing").classList.replace("emerald", "rebecca")
+                        }
+                    }
+
+                    for (student in student_obj) {
+                        if (student_obj[student]["repeat"]) {
+                            students_repeat = + 1
+                            repeat_status = "✗"
+                            document.getElementById("students_repeat").classList.replace("emerald", "orange")
+                        }
+                    }
+
+                    for (student in student_obj) {
+                        if (student_obj[student]["slow_down"]) {
+                            students_slow_down = + 1
+                            slow_status = "✗"
+                            document.getElementById("students_slow_down").classList.replace("emerald", "bittersweet")
+                        }
+                    }
+
+                    for (student in student_obj) {
+                        if (student_obj[student]["elaborate"]) {
+                            students_elaborate = + 1
+                            elaborate_status = "✗"
+                            document.getElementById("students_elaborate").classList.replace("emerald", "celestial")
+                        }
+                    }
+
+                    info_arr.forEach((e) => {
+                        document.getElementById(e).style.display = "block"
+                    })
+                    no_students.style.display = "none"
+
+                    document.getElementById("students_typing").innerHTML = `${typing_status} ${students_typing}/${total_students} are typing`
+                    document.getElementById("students_elaborate").innerHTML = `${elaborate_status} ${students_elaborate}/${total_students} want elaboration`
+                    document.getElementById("students_slow_down").innerHTML = `${slow_status} ${students_slow_down}/${total_students} want a slower pace`
+                    document.getElementById("students_repeat").innerHTML = `${repeat_status} ${students_repeat}/${total_students} want repetition`
+
+                } else {
+
+                    info_arr.forEach((e) => {
+                        document.getElementById(e).style.display = "none"
+                    })
+                    no_students.style.display = "block"
+
                 }
-            }
-            p_students_typing.innerHTML = `${students_typing}/${total_students} students typing`
+            })
         })
 
         window.onbeforeunload = (e) => {

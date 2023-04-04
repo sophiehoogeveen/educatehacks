@@ -13,6 +13,12 @@ button:hover {
     filter: brightness(110%)
 }
 
+
+button:disabled,
+button[disabled] {
+    filter: saturate(0%)
+}
+
 .center {
     position: fixed;
     top: 50%;
@@ -59,4 +65,15 @@ textarea:focus {
 .orange {
     background-color: #FFA729;
     color: black;
+}
+
+.rebecca {
+    background-color: #6E2594;
+    color: white;
+}
+
+.display_info {
+    border-radius: 20px;
+    margin: 10px;
+    padding: 10px 30px;
 }
