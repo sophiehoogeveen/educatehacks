@@ -5,15 +5,15 @@
 button {
     border-radius: 20px;
     margin: 10px;
-    padding: 5px 10px;
+    padding: 10px 30px;
     border: none;
 }
 
 button:hover {
-    filter: brightness(120%)
+    filter: brightness(110%)
 }
 
-div {
+.center {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -30,4 +30,33 @@ input:focus {
 
 textarea {
     resize: none;
+    width: 60vw;
+    height: 60vh;
+    margin: 0.5vh;
+    border-radius: 0px;
+    padding: 5px;
+}
+
+textarea:focus {
+    outline: none;
+}
+
+.emerald {
+    background-color: #06D6A0;
+    color: white;
+}
+
+.celestial {
+    background-color: #058ED9;
+    color: white;
+}
+
+.bittersweet {
+    background-color: #FE615C;
+    color: white;
+}
+
+.orange {
+    background-color: #FFA729;
+    color: black;
 }

@@ -44,6 +44,7 @@ const pages = {
     create_page_div: function (page_name) {
         const page_div = document.createElement("div")
         page_div.id = page_name
+        page_div.classList = "center"
         page_div.style.display = "none"
         this.page_arr.push(page_name)
         document.body.appendChild(page_div)
@@ -55,13 +56,19 @@ const pages = {
         this.create_page_div("start_page")
         const page_div = document.getElementById("start_page")
 
+        const title = document.createElement("h1")
+        title.innerHTML = "EducateHacks: Note-Taking Tracker"
+        page_div.appendChild(title)
+
         const enter_btn = document.createElement("button")
         enter_btn.innerHTML = "Enter a code"
+        enter_btn.classList = "celestial"
         enter_btn.onclick = function () { pages.active_page("enter_page") }
         page_div.appendChild(enter_btn)
 
         const create_btn = document.createElement("button")
         create_btn.innerHTML = "Create a code"
+        create_btn.classList = "emerald"
         create_btn.onclick = function () { pages.active_page("teacher_page") }
         page_div.appendChild(create_btn)
 
@@ -79,6 +86,7 @@ const pages = {
         const enter_btn = document.createElement("button")
         page_div.appendChild(enter_btn)
         enter_btn.innerHTML = "Enter"
+        enter_btn.classList = "celestial"
 
         enter_btn.onclick = function () {
             var entry_code = code_input.value
@@ -107,17 +115,22 @@ const pages = {
         const page_div = document.getElementById("student_page")
 
         const textarea = document.createElement("textarea")
+        textarea.placeholder = "Type your notes here!"
         page_div.appendChild(textarea)
 
-        const btn_names = ["Repeat", "Slow down", "Elaborate"]
+        const btn_names = ["Repeat ⟳", "Slow down ↓", "Elaborate 🛈"]
         const btn_ids = ["repeat", "slow_down", "elaborate"]
+        const btn_colors = ["orange", "bittersweet", "celestial"]
 
         for (i = 0; i < 3; i++) {
             var btn = document.createElement("button")
             btn.innerHTML = btn_names[i]
             btn.id = btn_ids[i]
+            btn.classList = btn_colors[i]
             page_div.appendChild(btn)
         }
+
+        var student_ref = database.ref(`${room_code}/students/${student_code}`)
 
         btn_ids.forEach((e) => {
 
@@ -131,11 +144,12 @@ const pages = {
                 update_obj[e] = true
                 console.log(e, update_obj)
 
-                database.ref(`${room_code}/students/${student_code}`).update(update_obj)
+                student_ref.update(update_obj)
 
                 function set_false() {
+
                     update_obj[e] = false
-                    database.ref(`${room_code}/students/${student_code}`).update(update_obj)
+                    student_ref.update(update_obj)
                 }
 
                 setTimeout(set_false, 10000)
@@ -146,14 +160,18 @@ const pages = {
         var timer
         textarea.addEventListener("keydown", function () {
             window.clearTimeout(timer)
-            database.ref(`${room_code}/students/${student_code}`).update({ is_typing: true })
+            student_ref.update({ is_typing: true })
 
             function set_typing_false() {
-                database.ref(`${room_code}/students/${student_code}`).update({ is_typing: false })
+                student_ref.update({ is_typing: false })
             }
             timer = setTimeout(set_typing_false, 500)
 
         })
+
+        window.onbeforeunload = (e) => {
+            student_ref.remove()
+        }
 
     },
 
@@ -167,9 +185,9 @@ const pages = {
         p_code.innerHTML = code
         page_div.appendChild(p_code)
 
-        const room = database.ref("/" + code)
+        const room_ref = database.ref("/" + code)
 
-        room.set({
+        room_ref.set({
             students: {},
             code: code,
         })
@@ -177,7 +195,7 @@ const pages = {
         var p_students_typing = document.createElement("p")
         page_div.appendChild(p_students_typing)
 
-        room.on('value', (snapshot) => {
+        room_ref.on('value', (snapshot) => {
             var room_obj = snapshot.val()
             var student_obj = room_obj["students"]
             var total_students = Object.keys(student_obj).length
@@ -189,6 +207,10 @@ const pages = {
             }
             p_students_typing.innerHTML = `${students_typing}/${total_students} students typing`
         })
+
+        window.onbeforeunload = (e) => {
+            room_ref.remove()
+        }
 
     },
 
