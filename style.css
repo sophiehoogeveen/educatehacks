@@ -24,6 +24,8 @@ button[disabled] {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    text-align: center;
+    justify-content: center;
 }
 
 input {
@@ -41,6 +43,7 @@ textarea {
     margin: 0.5vh;
     border-radius: 0px;
     padding: 5px;
+    justify-self: center;
 }
 
 textarea:focus {
@@ -72,8 +75,65 @@ textarea:focus {
     color: white;
 }
 
-.display_info {
-    border-radius: 20px;
-    margin: 10px;
-    padding: 10px 30px;
+a {
+    position: fixed;
+    left: 20px;
+    bottom: 20px;
+    font-size: 12px;
+    color: black;
+}
+
+@media screen and (max-width: 720px) {
+    button {
+        border-radius: 12px;
+        margin: 5px;
+        padding: 10px;
+        border: none;
+    }
+}
+
+@media screen and (max-width: 463px) {
+    button {
+        border-radius: 10px;
+        margin: 5px;
+        padding: 5px;
+        border: none;
+        font-size: small;
+    }
+
+    div {
+        width: 100%;
+    }
+
+    h1 {
+        font-size: medium;
+    }
+
+    textarea {
+        width: 90%
+    }
+}
+
+@media screen and (max-width: 960px) {
+
+    [id*="students_"],
+    [id*="status_icon"],
+    h3 {
+        display: none;
+    }
+
+    [id*="div_"] {
+        width: 104px;
+        display: grid;
+        grid-template-rows: 1fr 1fr 20px !important;
+        grid-template-columns: 104px !important;
+        margin: 10px 0 !important;
+        justify-self: center;
+    }
+
+    img {
+        margin: 10px !important;
+        padding: 0;
+    }
+
 }
