@@ -10,13 +10,14 @@ button {
 }
 
 button:hover {
-    filter: brightness(110%)
+    filter: brightness(110%);
+    cursor: pointer;
 }
 
 
 button:disabled,
 button[disabled] {
-    filter: saturate(0%)
+    filter: saturate(10%)
 }
 
 .center {
